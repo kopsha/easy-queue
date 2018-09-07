@@ -11,20 +11,24 @@
 
 typedef struct
 {
+  	// WARNING: don't mess with these outside this lib
     uint8_t buffer[QUEUE_SIZE];
-    int16_t head;      // NOTE: first position with usefull data
-    int16_t tail;      // NOTE: last position with usefull data
-    int16_t length;
+    int16_t head;     	// NOTE: first position with usefull data
+    int16_t tail;  		// NOTE: first free position
 } EasyQueue_st;
 
-bool did_queue_failed(void);
-void clear_queue_error(void);
+bool easy_queue_failed(void);
+void easy_clear_error(void);
 
-void init_easy_queue(EasyQueue_st *which);
-bool is_queue_empty(const EasyQueue_st *which);
+void easy_reset_queue(EasyQueue_st *which);
+bool easy_is_queue_empty(const EasyQueue_st *which);
+int16_t easy_queue_length(const EasyQueue_st *which);
+
+bool easy_push(EasyQueue_st *which, const uint8_t byte);
+bool easy_pop(EasyQueue_st *which, uint8_t *byte);
 
 // WARNING: assumed a 256 chunk limit (uint8_t)
-bool enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much);
-bool dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much);
+bool easy_enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much);
+bool easy_dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much);
 
 #endif

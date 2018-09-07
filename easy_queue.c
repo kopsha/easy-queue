@@ -4,24 +4,23 @@
 
 static bool last_error = false;
 
-bool did_queue_failed(void)
+bool easy_queue_failed(void)
 {
     return last_error;
 }
 
-void clear_queue_error(void)
+void easy_clear_error(void)
 {
     last_error = false;
 }
 
-void init_easy_queue(EasyQueue_st *which)
+void easy_reset_queue(EasyQueue_st *which)
 {
     if (which)
     {
         memset( which->buffer, 0x00, QUEUE_SIZE );
         which->head = 0;
         which->tail = 0;
-        which->length = 0;
     }
     else
     {
@@ -29,19 +28,33 @@ void init_easy_queue(EasyQueue_st *which)
     }
 }
 
-bool is_queue_empty(const EasyQueue_st *which)
+bool easy_is_queue_empty(const EasyQueue_st *which)
 {
     if (which)
     {
-        //return (which->length == 0);
         return (which->head == which->tail);
     }
 
-    last_error = true;
     return false;
 }
+int16_t easy_queue_length(const EasyQueue_st *which)
+{
+    if (which)
+    {
+        if (which->head <= which->tail)
+        {
+            return (which->tail - which->head);    
+        }
+        else
+        {
+            return (which->tail + QUEUE_SIZE - which->head);
+        }
+    }
 
-bool enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much)
+    return -1;
+}
+
+bool easy_enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much)
 {
     if (!which || !what || (how_much == 0))
     {
@@ -67,7 +80,7 @@ bool enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much)
 
     if (which->head <= which->tail)
     {
-        int16_t first_chunk_len = QUEUE_SIZE - (which->tail+1);
+        int16_t first_chunk_len = (which->tail + how_much) > QUEUE_SIZE ? QUEUE_SIZE - which->tail : how_much;
         int16_t second_chunk_len = how_much - first_chunk_len;
         if (first_chunk_len > 0)
         {
@@ -83,14 +96,13 @@ bool enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much)
         memcpy( which->buffer, what, how_much );
     }
     which->tail = (which->tail + how_much) % QUEUE_SIZE;
-    which->length += how_much;
 
     return true;
 }
 
-bool dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much)
+bool easy_dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much)
 {
-    if (!which || !where || (how_much == 0) || (how_much > which->length))
+    if (!which || !where || (how_much == 0) || (how_much > easy_queue_length(which)))
     {
         last_error = true;
         return false;
@@ -115,6 +127,5 @@ bool dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much)
     }
 
     which->head = (which->head + how_much) % QUEUE_SIZE;
-    which->length -= how_much;
     return true;
 }
