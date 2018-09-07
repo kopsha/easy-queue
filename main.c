@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 char printable( uint8_t x )
 {
@@ -18,18 +19,18 @@ void print_queue(const EasyQueue_st *which)
         printf(" ");
         if (i == which->head)
             printf("^");
-        printf("%c", printable(which->buffer[i]) );
         if (i == which->tail)
             printf("$");
+        printf("%c", printable(which->buffer[i]) );
         printf(",");
     }
 
     printf(" ");
     if (QUEUE_SIZE-1 == which->head)
         printf("^");
-    printf("%c", printable(which->buffer[QUEUE_SIZE-1]) );
     if (QUEUE_SIZE-1 == which->tail)
         printf("$");
+    printf("%c", printable(which->buffer[QUEUE_SIZE-1]) );
 
     printf("]\n");
 }
@@ -56,16 +57,42 @@ int main(int argc, char const *argv[])
 
     printf("Enqueue tests:\n");
     // no overflow
-    uint8_t mm[] = "mm";
-    uint8_t sample[] = "ten bytes.";
-    print_queue( &first_q );
-    enqueue( &first_q, mm, sizeof(mm)+1 );
-    print_queue( &first_q );
-    enqueue( &first_q, sample, sizeof(sample)+1 );
-    print_queue( &first_q );
-    enqueue( &first_q, mm, sizeof(mm)+1 );
+    char sample[] = "ten bytes.";
     print_queue( &first_q );
 
+    enqueue( &first_q, (uint8_t *)sample, strlen(sample) );
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    print_queue( &first_q );
+
+    char buffer[6] = "      ";
+    dequeue( (uint8_t *)buffer, &first_q, 5);
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    buffer[5]='\0';
+    printf("first chunk: %s\n", buffer );
+
+    dequeue( (uint8_t *)buffer, &first_q, 5);
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    buffer[5]='\0';
+    printf("second chunk: %s\n", buffer );
+
+    print_queue( &first_q );
+
+    // ring overflow
+    enqueue( &first_q, (uint8_t *)sample, strlen(sample) );
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    print_queue( &first_q );
+
+    dequeue( (uint8_t *)buffer, &first_q, 5);
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    buffer[5]='\0';
+    printf("first chunk: %s\n", buffer );
+
+    dequeue( (uint8_t *)buffer, &first_q, 5);
+    failed_test_count += did_queue_failed() ? 1 : 0;
+    buffer[5]='\0';
+    printf("second chunk: %s\n", buffer );
+
+    print_queue( &first_q );
     printf("Errors count: %d\n", failed_test_count);
 
     return failed_test_count;
