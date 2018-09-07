@@ -14,7 +14,7 @@ char printable( uint8_t x )
 void print_queue(const EasyQueue_st *which)
 {
     printf("head, tail: %d, %d\n[", which->head, which->tail );
-    printf("length: %d\n", easy_queue_length(which) );
+    printf("length: %d\n", which->length );
     for (int i=0; i<(QUEUE_SIZE-1); i++)
     {
         printf(" ");
@@ -39,20 +39,60 @@ void print_queue(const EasyQueue_st *which)
 int main(int argc, char const *argv[])
 {
     EasyQueue_st first_q;
-    EasyQueue_st secont_q;
+    EasyQueue_st second_q;
     int failed_test_count = 0;
 
     printf("Init tests:\n");
     easy_reset_queue( &first_q );
     failed_test_count += easy_queue_failed() ? 1 : 0;
-    easy_reset_queue( &secont_q );
+    easy_reset_queue( &second_q );
     failed_test_count += easy_queue_failed() ? 1 : 0;
 
     printf("Is empty tests:\n");
     failed_test_count += easy_is_queue_empty( &first_q ) ? 0 : 1;
     failed_test_count += easy_queue_failed() ? 1 : 0;
-    failed_test_count += easy_is_queue_empty( &secont_q ) ? 0 : 1;
+    failed_test_count += easy_is_queue_empty( &second_q ) ? 0 : 1;
     failed_test_count += easy_queue_failed() ? 1 : 0;
+
+    printf("Push & pop tests:\n");
+    print_queue( &second_q );
+
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        easy_push( &second_q, 'a'+(char)i );
+        failed_test_count += easy_queue_failed() ? 1 : 0;
+    }
+    print_queue( &second_q );
+
+    printf("Pops: ");
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        uint8_t outcome;
+        easy_pop( &second_q, &outcome );
+        printf( " %c,", (char)outcome );
+        failed_test_count += easy_queue_failed() ? 1 : 0;
+    }
+    printf("\n");
+    print_queue( &second_q );
+
+    for (uint8_t i = 0; i < 16; i++)
+    {
+        easy_push( &second_q, 'a'+(char)i );
+        failed_test_count += easy_queue_failed() ? 1 : 0;
+    }
+    print_queue( &second_q );
+
+    printf("Pops: ");
+    for (uint8_t i = 0; i < 16; i++)
+    {
+        uint8_t outcome;
+        easy_pop( &second_q, &outcome );
+        printf( " %c,", (char)outcome );
+        failed_test_count += easy_queue_failed() ? 1 : 0;
+    }
+    printf("\n");
+    print_queue( &second_q );
+
 
     printf("Tests without overflow:\n");
     char sample[] = "ten bytes.";

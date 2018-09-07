@@ -21,6 +21,7 @@ void easy_reset_queue(EasyQueue_st *which)
         memset( which->buffer, 0x00, QUEUE_SIZE );
         which->head = 0;
         which->tail = 0;
+        which->length = 0;
     }
     else
     {
@@ -32,26 +33,39 @@ bool easy_is_queue_empty(const EasyQueue_st *which)
 {
     if (which)
     {
-        return (which->head == which->tail);
+        return (which->length == 0);
     }
 
     return false;
 }
-int16_t easy_queue_length(const EasyQueue_st *which)
+
+bool easy_push(EasyQueue_st *which, const uint8_t byte)
 {
-    if (which)
+    if (!which || (which->length == QUEUE_SIZE))
     {
-        if (which->head <= which->tail)
-        {
-            return (which->tail - which->head);    
-        }
-        else
-        {
-            return (which->tail + QUEUE_SIZE - which->head);
-        }
+        last_error = true;
+        return false;
     }
 
-    return -1;
+    which->buffer[which->tail] = byte;
+    which->tail = (which->tail + 1) % QUEUE_SIZE;
+    which->length++;
+
+    return true;
+}
+bool easy_pop(EasyQueue_st *which, uint8_t *byte)
+{
+    if (!which || !byte || (which->length == 0))
+    {
+        last_error = true;
+        return false;
+    }
+
+    *byte = which->buffer[which->head];
+    which->head = (which->head + 1) % QUEUE_SIZE;
+    which->length--;
+
+    return true;
 }
 
 bool easy_enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much)
@@ -99,10 +113,9 @@ bool easy_enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_mu
 
     return true;
 }
-
 bool easy_dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much)
 {
-    if (!which || !where || (how_much == 0) || (how_much > easy_queue_length(which)))
+    if (!which || !where || (how_much == 0) || (how_much > which->length))
     {
         last_error = true;
         return false;
