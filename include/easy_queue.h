@@ -54,6 +54,20 @@ bool zq_push(EasyQueue *queue, const uint8_t byte)
     return true;
 }
 
+bool zq_pop(EasyQueue *queue, uint8_t *byte)
+{
+    if (!queue || !byte || queue->length <= 0)
+    {
+        return false;
+    }
+
+    queue->tail = (queue->tail - 1 + QUEUE_SIZE) % QUEUE_SIZE;
+    *byte = queue->buffer[queue->tail];
+    queue->length--;
+
+    return true;
+}
+
 bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
 {
     if (!queue || queue->length >= QUEUE_SIZE)
@@ -68,7 +82,7 @@ bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
     return true;
 }
 
-bool zq_pop(EasyQueue *queue, uint8_t *byte)
+bool zq_leftpop(EasyQueue *queue, uint8_t *byte)
 {
     if (!queue || !byte || queue->length <= 0)
     {
@@ -77,20 +91,6 @@ bool zq_pop(EasyQueue *queue, uint8_t *byte)
 
     *byte = queue->buffer[queue->head];
     queue->head = (queue->head + 1) % QUEUE_SIZE;
-    queue->length--;
-
-    return true;
-}
-
-bool zq_rightpop(EasyQueue *queue, uint8_t *byte)
-{
-    if (!queue || !byte || queue->length <= 0)
-    {
-        return false;
-    }
-
-    queue->tail = (queue->tail - 1 + QUEUE_SIZE) % QUEUE_SIZE;
-    *byte = queue->buffer[queue->tail];
     queue->length--;
 
     return true;
