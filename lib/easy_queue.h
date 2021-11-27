@@ -5,8 +5,8 @@
 #include <stdbool.h>
 
 #ifndef QUEUE_SIZE
-// NOTE: define this before include to configure the size you need
-#define QUEUE_SIZE 16
+#error You must define a QUEUE_SIZE before include
+// #define QUEUE_SIZE 11
 #endif
 
 typedef struct

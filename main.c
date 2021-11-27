@@ -1,4 +1,4 @@
-
+#define QUEUE_SIZE 16
 #include "easy_queue.h"
 
 #include <stdio.h>

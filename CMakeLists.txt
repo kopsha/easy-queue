@@ -1,8 +1,19 @@
-cmake_minimum_required(VERSION 2.6.0)
+cmake_minimum_required(VERSION 3.10)
 
-project(easy-app C)
-add_subdirectory(lib)
-add_executable(easy-app main.c)
+project(easy-app)
 
-target_include_directories(easy-app PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib")
-target_link_libraries(easy-app PUBLIC easy-queue-lib)
+set(CMAKE_CXX_STANDARD 11)
+
+add_executable(example-app main.c include/easy_queue.h)
+
+target_include_directories(example-app PUBLIC "${PROJECT_SOURCE_DIR}/lib")
+target_link_libraries(example-app PUBLIC easy-queue-lib)
+
+# google test stuff
+find_package(GTest CONFIG REQUIRED)
+enable_testing()
+include(GoogleTest)
+add_executable(tests main_tests.cpp include/easy_queue.h)
+target_include_directories(tests PUBLIC "${PROJECT_SOURCE_DIR}/lib")
+target_link_libraries(tests GTest::gtest)
+target_link_libraries(tests easy-queue-lib)
