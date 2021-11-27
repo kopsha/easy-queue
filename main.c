@@ -11,7 +11,7 @@ char printable( uint8_t x )
     return (x < 32) ? '.' : x;
 }
 
-void print_queue(const EasyQueue_st *which)
+void print_queue(const EasyQueue *which)
 {
     printf("head, tail: %d, %d\n[", which->head, which->tail );
     printf("length: %d\n", which->length );
@@ -38,29 +38,24 @@ void print_queue(const EasyQueue_st *which)
 
 int main(int argc, char const *argv[])
 {
-    EasyQueue_st first_q;
-    EasyQueue_st second_q;
+    EasyQueue first_q;
+    EasyQueue second_q;
     int failed_test_count = 0;
 
     printf("Init tests:\n");
-    easy_reset_queue( &first_q );
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    easy_reset_queue( &second_q );
-    failed_test_count += easy_queue_failed() ? 1 : 0;
+    failed_test_count += zq_init( &first_q );
+    failed_test_count += zq_init( &second_q );
 
     printf("Is empty tests:\n");
-    failed_test_count += easy_is_queue_empty( &first_q ) ? 0 : 1;
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    failed_test_count += easy_is_queue_empty( &second_q ) ? 0 : 1;
-    failed_test_count += easy_queue_failed() ? 1 : 0;
+    failed_test_count += zq_is_empty( &first_q ) ? 0 : 1;
+    failed_test_count += zq_is_empty( &second_q ) ? 0 : 1;
 
     printf("Push & pop tests:\n");
     print_queue( &second_q );
 
     for (uint8_t i = 0; i < 6; i++)
     {
-        easy_push( &second_q, 'a'+(char)i );
-        failed_test_count += easy_queue_failed() ? 1 : 0;
+        failed_test_count += zq_push( &second_q, 'a'+(char)i );
     }
     print_queue( &second_q );
 
@@ -68,17 +63,15 @@ int main(int argc, char const *argv[])
     for (uint8_t i = 0; i < 6; i++)
     {
         uint8_t outcome;
-        easy_pop( &second_q, &outcome );
+        failed_test_count += zq_pop( &second_q, &outcome );
         printf( " %c,", (char)outcome );
-        failed_test_count += easy_queue_failed() ? 1 : 0;
     }
     printf("\n");
     print_queue( &second_q );
 
     for (uint8_t i = 0; i < 16; i++)
     {
-        easy_push( &second_q, 'a'+(char)i );
-        failed_test_count += easy_queue_failed() ? 1 : 0;
+        failed_test_count += zq_push( &second_q, 'a'+(char)i );
     }
     print_queue( &second_q );
 
@@ -86,52 +79,11 @@ int main(int argc, char const *argv[])
     for (uint8_t i = 0; i < 16; i++)
     {
         uint8_t outcome;
-        easy_pop( &second_q, &outcome );
+        failed_test_count += zq_pop( &second_q, &outcome );
         printf( " %c,", (char)outcome );
-        failed_test_count += easy_queue_failed() ? 1 : 0;
     }
     printf("\n");
     print_queue( &second_q );
-
-
-    printf("Tests without overflow:\n");
-    char sample[] = "ten bytes.";
-    print_queue( &first_q );
-
-    easy_enqueue( &first_q, (uint8_t *)sample, strlen(sample) );
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    print_queue( &first_q );
-
-    char buffer[6] = "      ";
-    easy_dequeue( (uint8_t *)buffer, &first_q, 5);
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    buffer[5]='\0';
-    printf("first chunk: %s\n", buffer );
-
-    easy_dequeue( (uint8_t *)buffer, &first_q, 5);
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    buffer[5]='\0';
-    printf("second chunk: %s\n", buffer );
-
-    print_queue( &first_q );
-
-    printf("Tests with ring overflow:\n");
-    easy_enqueue( &first_q, (uint8_t *)sample, strlen(sample) );
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    print_queue( &first_q );
-
-    easy_dequeue( (uint8_t *)buffer, &first_q, 5);
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    buffer[5]='\0';
-    printf("first chunk: %s\n", buffer );
-
-    easy_dequeue( (uint8_t *)buffer, &first_q, 5);
-    failed_test_count += easy_queue_failed() ? 1 : 0;
-    buffer[5]='\0';
-    printf("second chunk: %s\n", buffer );
-
-    print_queue( &first_q );
-    printf("Errors count: %d\n", failed_test_count);
 
     return failed_test_count;
 }

@@ -13,21 +13,19 @@ extern "C" {
 
 
 TEST(InitQueue, NewQueueIsEmpty) {
-    EasyQueue_st first;
-    EasyQueue_st second;
+    EasyQueue first;
+    EasyQueue second;
 
-    easy_reset_queue( &first );
-    easy_reset_queue( &second );
+    zq_init( &first );
+    zq_init( &second );
 
-    EXPECT_TRUE( easy_is_queue_empty( &first ) );
-    EXPECT_TRUE( easy_is_queue_empty( &second ) );
+    EXPECT_TRUE( zq_is_empty( &first ) );
+    EXPECT_TRUE( zq_is_empty( &second ) );
 
-    EXPECT_FALSE( easy_queue_failed() );
-    EXPECT_FALSE( easy_queue_failed() );
 }
 
 TEST(PushQueue, AddElementIncreasesSize) {
-    EasyQueue_st q;
+    EasyQueue q;
 
 
 }

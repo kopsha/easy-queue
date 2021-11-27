@@ -1,34 +1,99 @@
 #ifndef __EASY_QUEUE_H
 #define __EASY_QUEUE_H
 
+#ifndef QUEUE_SIZE
+    #error You must define a QUEUE_SIZE before include
+#endif
+
 #include <stdint.h>
 #include <stdbool.h>
+#include <memory.h>
 
-#ifndef QUEUE_SIZE
-#error You must define a QUEUE_SIZE before include
-// #define QUEUE_SIZE 11
-#endif
 
 typedef struct
 {
-  	// WARNING: don't mess with these in your code
     uint8_t buffer[QUEUE_SIZE];
     int16_t head;     	// NOTE: first position with usefull data
     int16_t tail;  		// NOTE: first free position
     uint16_t length;
-} EasyQueue_st;
+} EasyQueue;
 
-bool easy_queue_failed(void);
-void easy_clear_error(void);
 
-void easy_reset_queue(EasyQueue_st *which);
-bool easy_is_queue_empty(const EasyQueue_st *which);
+// TODO: add initial value
+bool zq_init(EasyQueue *queue)
+{
+    if (!queue)
+    {
+        return false;
+    }
 
-bool easy_push(EasyQueue_st *which, const uint8_t byte);
-bool easy_pop(EasyQueue_st *which, uint8_t *byte);
+    memset( queue->buffer, 0x00, QUEUE_SIZE );
+    queue->head = 0;
+    queue->tail = 0;
+    queue->length = 0;
 
-// WARNING: assumed a 256 chunk limit (uint8_t)
-bool easy_enqueue(EasyQueue_st *which, const uint8_t *what, const uint8_t how_much);
-bool easy_dequeue(uint8_t *where, EasyQueue_st *which, const uint8_t how_much);
+    return true;
+}
+
+bool zq_is_empty(const EasyQueue *queue)
+{
+    return queue && queue->length == 0;
+}
+
+bool zq_push(EasyQueue *queue, const uint8_t byte)
+{
+    if (!queue || queue->length >= QUEUE_SIZE)
+    {
+        return false;
+    }
+
+    queue->buffer[queue->tail] = byte;
+    queue->tail = (queue->tail + 1) % QUEUE_SIZE;
+    queue->length++;
+
+    return true;
+}
+
+bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
+{
+    if (!queue || queue->length >= QUEUE_SIZE)
+    {
+        return false;
+    }
+
+    queue->head = (queue->head - 1 + QUEUE_SIZE) % QUEUE_SIZE;
+    queue->buffer[queue->head] = byte;
+    queue->length++;
+
+    return true;
+}
+
+bool zq_pop(EasyQueue *queue, uint8_t *byte)
+{
+    if (!queue || !byte || queue->length <= 0)
+    {
+        return false;
+    }
+
+    *byte = queue->buffer[queue->head];
+    queue->head = (queue->head + 1) % QUEUE_SIZE;
+    queue->length--;
+
+    return true;
+}
+
+bool zq_rightpop(EasyQueue *queue, uint8_t *byte)
+{
+    if (!queue || !byte || queue->length <= 0)
+    {
+        return false;
+    }
+
+    queue->tail = (queue->tail - 1 + QUEUE_SIZE) % QUEUE_SIZE;
+    *byte = queue->buffer[queue->tail];
+    queue->length--;
+
+    return true;
+}
 
 #endif
