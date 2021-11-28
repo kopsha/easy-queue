@@ -38,7 +38,12 @@ missed inthere.
 The tests are actually C++ code, because Google Test Framework requires it,
 but rest assured, the queue library is fully ANSI C compliant.
 
+
+## single header implementation
+
 The actual queue implementation lives in a single header file
 [easy_queue.h](./include/easy_queue.h). Copy it and use it at will.
 
-I have provided also a C client application example at[main.c](./main.c).
+## basic example
+
+I have provided also a C client application example at [main.c](./main.c).
