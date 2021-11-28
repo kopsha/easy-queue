@@ -6,32 +6,22 @@
 #include <stdbool.h>
 #include <string.h>
 
-char printable( uint8_t x )
-{
-    return (x < 32) ? '.' : x;
-}
 
 void print_queue(const EasyQueue *which)
 {
-    printf("head, tail: %d, %d\n[", which->head, which->tail );
-    printf("length: %d\n", which->length );
-    for (int i=0; i<(QUEUE_SIZE-1); i++)
+    printf("head, tail: %d, %d; ", which->head, which->tail );
+    printf("length: %d (%d)\n[", which->length, QUEUE_SIZE );
+    for (int i=0; i<QUEUE_SIZE; i++)
     {
-        printf(" ");
-        if (i == which->head)
-            printf("^");
-        if (i == which->tail)
-            printf("$");
-        printf("%c", printable(which->buffer[i]) );
-        printf(",");
+        if (i == which->head && i == which->tail)
+            printf("$^%3d,", which->buffer[i] );
+        else if (i == which->head)
+            printf("^%4d,", which->buffer[i] );
+        else if (i == which->tail)
+            printf("$%4d,", which->buffer[i] );
+        else
+            printf("%5d,", which->buffer[i] );
     }
-
-    printf(" ");
-    if (QUEUE_SIZE-1 == which->head)
-        printf("^");
-    if (QUEUE_SIZE-1 == which->tail)
-        printf("$");
-    printf("%c", printable(which->buffer[QUEUE_SIZE-1]) );
 
     printf("]\n");
 }
@@ -85,5 +75,5 @@ int main(int argc, char const *argv[])
     printf("\n");
     print_queue( &second_q );
 
-    return failed_test_count;
+    return 0;
 }
