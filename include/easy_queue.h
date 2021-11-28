@@ -1,5 +1,5 @@
 /**
- * @brief A typical queue and ring buffer static implementation in ANSI C,
+ * @brief A typical queue and ring buffer static implementation in ANSI C.
  * Static implementations are really fast, portable (if you're not bothered
  * by compiling) and safe.
  *
@@ -14,10 +14,6 @@
  * The only thing to do before using it is to define the QUEUE_SIZE which
  * will be used for all further queues. That's the price to pay for the
  * speed of static implementations.
- *
- * Next thing for our fellow ANSI C coders is some smart C templating
- * mechanics, using some external tool. I guess it's going to be python,
- * since it is already supported by so many platforms.
  */
 
 #ifndef __EASY_QUEUE_H
@@ -203,7 +199,6 @@ bool zq_ringpush(EasyQueue *queue, const uint8_t byte)
     {
         queue->head = (queue->head + 1) % QUEUE_SIZE;
     }
-
 
     return true;
 }
