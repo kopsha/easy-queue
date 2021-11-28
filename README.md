@@ -1,9 +1,15 @@
-# easy-queue
+# easy-queue for ansi c
 
 A simple and fast static ring buffer implementation in ANSI C
 
+## Interesting stats
 
-## why, you ask...
+* ![build passed](https://img.shields.io/badge/build-passed-brightgreen)
+* ![code coverage](https://img.shields.io/badge/code%20coverage-100%25-brightgreen)
+* ![branch coverage](https://img.shields.io/badge/branch%20coverage-100%25-brightgreen)
+
+
+## why a static queue, you ask...
 
 Static implementations are really fast, portable (if you're not bothered
 by compiling) and safe.
