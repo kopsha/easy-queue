@@ -25,7 +25,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#if HAVE_MEMORY_H
 #include <memory.h>
+#else
+#include <string.h>
+#endif
+// If your toolchain does not define this HAVE_MEMORY_H macro, please have a look
+// at https://github.com/ve3wwg/stm32f103c8t6/issues/4 for an alternate solution.
 
 
 typedef struct
@@ -44,7 +51,7 @@ typedef struct
  * @return true if successfull,
  * @return false otherwise
  */
-bool zq_init(EasyQueue *queue)
+inline bool zq_init(EasyQueue *queue)
 {
     if (!queue)
     {
@@ -66,7 +73,7 @@ bool zq_init(EasyQueue *queue)
  * @return true when queue is actually empty, or
  * @return false otherwise or when queue is null
  */
-bool zq_is_empty(const EasyQueue *queue)
+inline bool zq_is_empty(const EasyQueue *queue)
 {
     return queue && queue->length == 0;
 }
@@ -81,7 +88,7 @@ bool zq_is_empty(const EasyQueue *queue)
  * @return true when successfull, or
  * @return false otherwise
  */
-bool zq_push(EasyQueue *queue, const uint8_t byte)
+inline bool zq_push(EasyQueue *queue, const uint8_t byte)
 {
     if (!queue || queue->length >= QUEUE_SIZE)
     {
@@ -105,7 +112,7 @@ bool zq_push(EasyQueue *queue, const uint8_t byte)
  * @return true when successfull, or
  * @return false otherwise
  */
-bool zq_pop(EasyQueue *queue, uint8_t *byte)
+inline bool zq_pop(EasyQueue *queue, uint8_t *byte)
 {
     if (!queue || !byte || queue->length <= 0)
     {
@@ -131,7 +138,7 @@ bool zq_pop(EasyQueue *queue, uint8_t *byte)
  * @return true
  * @return false
  */
-bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
+inline bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
 {
     if (!queue || queue->length >= QUEUE_SIZE)
     {
@@ -155,7 +162,7 @@ bool zq_leftpush(EasyQueue *queue, const uint8_t byte)
  * @return true when successfull, or
  * @return false otherwise
  */
-bool zq_leftpop(EasyQueue *queue, uint8_t *byte)
+inline bool zq_leftpop(EasyQueue *queue, uint8_t *byte)
 {
     if (!queue || !byte || queue->length <= 0)
     {
@@ -181,7 +188,7 @@ bool zq_leftpop(EasyQueue *queue, uint8_t *byte)
  * @return true when successfull, or
  * @return false otherwise
  */
-bool zq_ringpush(EasyQueue *queue, const uint8_t byte)
+inline bool zq_ringpush(EasyQueue *queue, const uint8_t byte)
 {
     if (!queue)
     {
