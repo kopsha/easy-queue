@@ -25,7 +25,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#if HAVE_MEMORY_H
 #include <memory.h>
+#else
+#include <string.h>
+#endif
+// If your toolchain does not define this HAVE_MEMORY_H macro, please have a look
+// at https://github.com/ve3wwg/stm32f103c8t6/issues/4 for an alternate solution.
 
 
 typedef struct
